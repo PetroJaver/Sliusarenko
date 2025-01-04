@@ -9,5 +9,5 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.SETTER)
 public interface UserMapper {
-    List<UserDTO> toUserDTOs(List<User> users);
+    List<UserDTO> toDTOs(List<User> users);
 }

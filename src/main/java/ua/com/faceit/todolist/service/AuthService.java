@@ -1,6 +1,6 @@
 package ua.com.faceit.todolist.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,30 +34,25 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-    @Autowired
-    UserRepository userRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    @Autowired
-    RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    JwtUtils jwtUtils;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    RefreshTokenService refreshTokenService;
+    private final JwtUtils jwtUtils;
+
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${webServerUrl}")
     private String webServerUrl;
 
-    @Autowired
-    EmailService emailService;
+    private final EmailService emailService;
 
     public void signup(SignupRequest signupRequest) {
         String firstName = signupRequest.getFirstName();

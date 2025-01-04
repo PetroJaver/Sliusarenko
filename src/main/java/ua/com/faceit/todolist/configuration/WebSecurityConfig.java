@@ -1,5 +1,6 @@
 package ua.com.faceit.todolist.configuration;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +16,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ua.com.faceit.todolist.jwt.AuthEntryPointJwt;
 import ua.com.faceit.todolist.jwt.AuthTokenFilter;
+import ua.com.faceit.todolist.jwt.JwtUtils;
 import ua.com.faceit.todolist.service.UserDetailsServiceImpl;
 
 @Configuration
 @EnableMethodSecurity
+@AllArgsConstructor
 public class WebSecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup",
@@ -27,11 +30,9 @@ public class WebSecurityConfig {
             "/api/auth/confirm"
     };
 
-    @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {

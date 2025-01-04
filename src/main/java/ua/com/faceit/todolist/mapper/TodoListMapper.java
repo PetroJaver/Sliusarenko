@@ -4,16 +4,16 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import ua.com.faceit.todolist.data.Task;
-import ua.com.faceit.todolist.dto.TaskDTO;
+import ua.com.faceit.todolist.data.TodoList;
+import ua.com.faceit.todolist.dto.TodoListDTO;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.SETTER, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface TaskMapper {
-    List<TaskDTO> toDTOs(List<Task> tasks);
+public interface TodoListMapper {
+    List<TodoListDTO> toDTOs(List<TodoList> todoLists);
 
-    TaskDTO toDTO(Task task);
+    TodoListDTO toDTO(TodoList todoList);
 
-    Task update(@MappingTarget Task task, TaskDTO taskDTO);
+    TodoList update(@MappingTarget TodoList todoList, TodoListDTO todoListDTO);
 }

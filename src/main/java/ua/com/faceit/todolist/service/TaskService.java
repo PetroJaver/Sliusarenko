@@ -33,7 +33,7 @@ public class TaskService {
             tasks = taskRepository.findAllByUser_Id(userId);
         }
 
-        return taskMapper.toTaskDTOs(tasks);
+        return taskMapper.toDTOs(tasks);
     }
 
     public TaskDTO getTaskById(Long id) {
@@ -43,7 +43,7 @@ public class TaskService {
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
 
-        return taskMapper.toTaskDTO(task);
+        return taskMapper.toDTO(task);
     }
 
     public TaskDTO addTask(TaskDTO taskDTO) {
@@ -57,7 +57,7 @@ public class TaskService {
 
         taskRepository.save(task);
 
-        return taskMapper.toTaskDTO(task);
+        return taskMapper.toDTO(task);
     }
 
     public void deleteTaskById(Long id) {
@@ -76,12 +76,12 @@ public class TaskService {
 
         boolean isUpdateAllowed = isUserAdmin() || task.getUser().getId().equals(getUserId());
         if(isUpdateAllowed) {
-            task = taskMapper.updateTask(task, taskDTO);
+            task = taskMapper.update(task, taskDTO);
             taskRepository.save(task);
         } else {
             throw new AccessDeniedException("You do not have permission to update this resource");
         }
 
-        return taskMapper.toTaskDTO(task);
+        return taskMapper.toDTO(task);
     }
 }
