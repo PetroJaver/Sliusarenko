@@ -18,7 +18,7 @@ import java.util.UUID;
 public class RefreshTokenService {
 
     @Value("${spring.app.jwtRefreshExpirationMs}")
-    private Long refreshTokenDurationMs;
+    Long refreshTokenDurationMs;
 
     private final RefreshTokenRepository refreshTokenRepository;
 

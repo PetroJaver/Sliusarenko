@@ -6,21 +6,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ua.com.faceit.todolist.dto.TaskDTO;
+import ua.com.faceit.todolist.dto.TodoListDTO;
 import ua.com.faceit.todolist.exception.BadRequestException;
-import ua.com.faceit.todolist.service.TaskService;
+import ua.com.faceit.todolist.service.TodoListService;
 import ua.com.faceit.todolist.validation.group.CreateTaskInfo;
+import ua.com.faceit.todolist.validation.group.CreateTodoListInfo;
 import ua.com.faceit.todolist.validation.group.UpdateTaskInfo;
+import ua.com.faceit.todolist.validation.group.UpdateTodoListInfo;
 
 import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping("/api/todolist")
 @RequiredArgsConstructor
-public class TaskController {
+public class TodoListController {
 
-    private final TaskService taskService;
+    private final TodoListService todoListService;
 
     @Value("${webServerUrl}")
     String webServerUrl;
@@ -28,19 +30,19 @@ public class TaskController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getAllTasks() {
-        List<TaskDTO> tasks = taskService.getAll();
+        List<TodoListDTO> tasks = todoListService.getAll();
 
         return ResponseEntity.ok(tasks);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> addTask(@Validated(CreateTaskInfo.class) @RequestBody TaskDTO task) {
+    public ResponseEntity<?> addTask(@Validated(CreateTodoListInfo.class) @RequestBody TodoListDTO task) {
         if(task.getId() != null) {
             throw new BadRequestException("Task id should be null");
         }
 
-        TaskDTO taskDTO = taskService.add(task);
+        TodoListDTO taskDTO = todoListService.create(task);
 
         return ResponseEntity.created(URI.create(webServerUrl + "/api/tasks/" + taskDTO.getId())).build();
     }
@@ -48,7 +50,7 @@ public class TaskController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> getTaskById(@PathVariable Long id) {
-        TaskDTO task = taskService.getById(id);
+        TodoListDTO task = todoListService.getById(id);
 
         return ResponseEntity.ok(task);
     }
@@ -56,14 +58,14 @@ public class TaskController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteTaskById(@PathVariable Long id) {
-        taskService.deleteById(id);
+        todoListService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping
-    public ResponseEntity<?> updateTask(@Validated(UpdateTaskInfo.class) @RequestBody TaskDTO task) {
-        TaskDTO taskDTO = taskService.update(task);
+    public ResponseEntity<?> updateTask(@Validated(UpdateTodoListInfo.class) @RequestBody TodoListDTO task) {
+        TodoListDTO taskDTO = todoListService.update(task);
 
         return ResponseEntity.ok(taskDTO);
     }

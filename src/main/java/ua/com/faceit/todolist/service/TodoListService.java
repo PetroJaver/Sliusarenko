@@ -25,7 +25,7 @@ public class TodoListService {
     private final TodoListMapper todoListMapper;
     private final UserRepository userRepository;
 
-    public List<TodoListDTO> getTodoLists() {
+    public List<TodoListDTO> getAll() {
         List<TodoList> todoLists;
         if (isUserAdmin()) {
             todoLists = todoListRepository.findAll();
@@ -37,7 +37,7 @@ public class TodoListService {
         return todoListMapper.toDTOs(todoLists);
     }
 
-    public TodoListDTO getTaskById(Long id) {
+    public TodoListDTO getById(Long id) {
         TodoList todoList = todoListRepository.findById(id).orElseThrow(() -> new NotFoundException("Todo list not found"));
 
         if (!todoList.getUser().getId().equals(getUserId())) {
@@ -47,12 +47,12 @@ public class TodoListService {
         return todoListMapper.toDTO(todoList);
     }
 
-    public TodoListDTO createTodoList(TodoListDTO todoListDTO) {
+    public TodoListDTO create(TodoListDTO todoListDTO) {
         Long userId = getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
 
         TodoList todolist = new TodoList();
-        todolist.setName(todolist.getName());
+        todolist.setName(todoListDTO.getName());
         todolist.setUser(user);
 
         todoListRepository.save(todolist);
@@ -60,7 +60,7 @@ public class TodoListService {
         return todoListMapper.toDTO(todolist);
     }
 
-    public void deleteTodoListById(Long id) {
+    public void deleteById(Long id) {
         TodoList todoList = todoListRepository.findById(id).orElseThrow(() -> new NotFoundException("Task not found"));
 
         boolean isDeleteAllowed = isUserAdmin() || todoList.getUser().getId().equals(getUserId());
@@ -71,7 +71,7 @@ public class TodoListService {
         }
     }
 
-    public TodoListDTO updateTask(TodoListDTO todoListDTO) {
+    public TodoListDTO update(TodoListDTO todoListDTO) {
         TodoList todoList = todoListRepository.findById(todoListDTO.getId()).orElseThrow(() -> new NotFoundException("Task not found"));
 
         boolean isUpdateAllowed = isUserAdmin() || todoList.getUser().getId().equals(getUserId());

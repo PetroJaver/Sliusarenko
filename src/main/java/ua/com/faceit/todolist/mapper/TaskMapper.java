@@ -1,9 +1,6 @@
 package ua.com.faceit.todolist.mapper;
 
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import ua.com.faceit.todolist.data.Task;
 import ua.com.faceit.todolist.dto.TaskDTO;
 
@@ -13,6 +10,7 @@ import java.util.List;
 public interface TaskMapper {
     List<TaskDTO> toDTOs(List<Task> tasks);
 
+    @Mapping(target = "todoListId", source = "todoList.id")
     TaskDTO toDTO(Task task);
 
     Task update(@MappingTarget Task task, TaskDTO taskDTO);

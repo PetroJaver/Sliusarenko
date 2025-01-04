@@ -45,9 +45,7 @@ public class User extends AuditModel {
     private String lastName;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable
     private Set<Role> roles = new HashSet<>();
 
     @Column(name = "enabled", nullable = false)

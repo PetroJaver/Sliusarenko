@@ -21,10 +21,10 @@ public class JwtUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${spring.app.jwtSecret}")
-    private String jwtSecret;
+    String jwtSecret;
 
     @Value("${spring.app.jwtExpirationMs}")
-    private int jwtExpirationMs;
+    int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
 

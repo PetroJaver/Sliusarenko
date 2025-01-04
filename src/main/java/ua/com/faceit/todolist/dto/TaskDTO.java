@@ -1,5 +1,6 @@
 package ua.com.faceit.todolist.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,9 +11,10 @@ import ua.com.faceit.todolist.validation.group.UpdateTaskInfo;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TaskDTO {
 
-    @NotNull(groups = UpdateTaskInfo.class, message = "Id cannot be null")
+    @NotNull(groups = UpdateTaskInfo.class)
     private Long id;
 
     @NotBlank(groups = CreateTaskInfo.class)
@@ -20,4 +22,7 @@ public class TaskDTO {
     private String title;
 
     private String description;
+
+    @NotNull(groups = CreateTaskInfo.class)
+    private Long todoListId;
 }

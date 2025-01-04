@@ -3,6 +3,7 @@ package ua.com.faceit.todolist.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ua.com.faceit.todolist.data.Task;
+import ua.com.faceit.todolist.data.TodoList;
 import ua.com.faceit.todolist.data.User;
 import ua.com.faceit.todolist.dto.TaskDTO;
 import ua.com.faceit.todolist.exception.AccessDeniedException;
@@ -10,6 +11,7 @@ import ua.com.faceit.todolist.exception.BadRequestException;
 import ua.com.faceit.todolist.exception.NotFoundException;
 import ua.com.faceit.todolist.mapper.TaskMapper;
 import ua.com.faceit.todolist.repository.TaskRepository;
+import ua.com.faceit.todolist.repository.TodoListRepository;
 import ua.com.faceit.todolist.repository.UserRepository;
 
 import java.util.List;
@@ -23,8 +25,9 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final TaskMapper taskMapper;
+    private final TodoListRepository todoListRepository;
 
-    public List<TaskDTO> getTasks() {
+    public List<TaskDTO> getAll() {
         List<Task> tasks;
         if (isUserAdmin()) {
             tasks = taskRepository.findAll();
@@ -36,7 +39,7 @@ public class TaskService {
         return taskMapper.toDTOs(tasks);
     }
 
-    public TaskDTO getTaskById(Long id) {
+    public TaskDTO getById(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Task not found"));
 
         if (!task.getUser().getId().equals(getUserId())) {
@@ -46,21 +49,23 @@ public class TaskService {
         return taskMapper.toDTO(task);
     }
 
-    public TaskDTO addTask(TaskDTO taskDTO) {
+    public TaskDTO add(TaskDTO taskDTO) {
         Long userId = getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
+        TodoList todoList = todoListRepository.findById(taskDTO.getTodoListId()).orElseThrow(() -> new NotFoundException("Todo list not found"));
 
         Task task = new Task();
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setUser(user);
+        task.setTodoList(todoList);
 
         taskRepository.save(task);
 
         return taskMapper.toDTO(task);
     }
 
-    public void deleteTaskById(Long id) {
+    public void deleteById(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Task not found"));
 
         boolean isDeleteAllowed = isUserAdmin() || task.getUser().getId().equals(getUserId());
@@ -71,12 +76,19 @@ public class TaskService {
         }
     }
 
-    public TaskDTO updateTask(TaskDTO taskDTO) {
+    public TaskDTO update(TaskDTO taskDTO) {
         Task task = taskRepository.findById(taskDTO.getId()).orElseThrow(() -> new NotFoundException("Task not found"));
 
         boolean isUpdateAllowed = isUserAdmin() || task.getUser().getId().equals(getUserId());
         if(isUpdateAllowed) {
             task = taskMapper.update(task, taskDTO);
+
+            Long todoListId = taskDTO.getTodoListId();
+            if(todoListId != null) {
+                TodoList todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new NotFoundException("Todo list not found"));
+                task.setTodoList(todoList);
+            }
+
             taskRepository.save(task);
         } else {
             throw new AccessDeniedException("You do not have permission to update this resource");

@@ -19,7 +19,7 @@ public class UserService {
 
     private final UserMapper userMapper;
 
-    public List<UserDTO> getAllUsers() {
+    public List<UserDTO> getAll() {
         List<User> users = userRepository.findAll();
 
         return userMapper.toDTOs(users);

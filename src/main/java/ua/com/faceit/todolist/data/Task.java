@@ -22,6 +22,18 @@ public class Task extends AuditModel {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn
     private User user;
+
+    @ManyToOne
+    @JoinTable(
+            name = "todo_lists_tasks",
+            joinColumns = {
+                    @JoinColumn(name = "tasks_id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "todo_list_id")
+            }
+    )
+    private TodoList todoList;
 }

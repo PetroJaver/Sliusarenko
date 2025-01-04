@@ -24,6 +24,6 @@ public class TodoList {
     private List<Task> tasks;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn
     private User user;
 }

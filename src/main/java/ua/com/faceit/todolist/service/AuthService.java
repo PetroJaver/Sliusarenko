@@ -50,7 +50,7 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
 
     @Value("${webServerUrl}")
-    private String webServerUrl;
+    String webServerUrl;
 
     private final EmailService emailService;
 
