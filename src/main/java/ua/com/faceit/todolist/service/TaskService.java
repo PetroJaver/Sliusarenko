@@ -1,7 +1,13 @@
 package ua.com.faceit.todolist.service;
 
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import jakarta.validation.Validation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 import ua.com.faceit.todolist.data.Task;
 import ua.com.faceit.todolist.data.TodoList;
 import ua.com.faceit.todolist.data.User;
@@ -13,7 +19,11 @@ import ua.com.faceit.todolist.mapper.TaskMapper;
 import ua.com.faceit.todolist.repository.TaskRepository;
 import ua.com.faceit.todolist.repository.TodoListRepository;
 import ua.com.faceit.todolist.repository.UserRepository;
+import ua.com.faceit.todolist.validation.group.CreateTaskInfo;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ua.com.faceit.todolist.utils.SecurityUtils.getUserId;
@@ -49,7 +59,7 @@ public class TaskService {
         return taskMapper.toDTO(task);
     }
 
-    public TaskDTO add(TaskDTO taskDTO) {
+    public TaskDTO add(@Validated({CreateTaskInfo.class}) TaskDTO taskDTO) {
         Long userId = getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
         TodoList todoList = todoListRepository.findById(taskDTO.getTodoListId()).orElseThrow(() -> new NotFoundException("Todo list not found"));
@@ -95,5 +105,29 @@ public class TaskService {
         }
 
         return taskMapper.toDTO(task);
+    }
+
+    public List<TaskDTO> upload(MultipartFile file) throws IOException {
+        CsvMapper csvMapper = new CsvMapper();
+        CsvSchema schema = CsvSchema.builder()
+                .addColumn("title")
+                .addColumn("description")
+                .addNumberColumn("todoListId")
+                .build();
+
+        List<TaskDTO> taskDTOS;
+        try (MappingIterator<TaskDTO> parsedData = csvMapper.readerWithSchemaFor(TaskDTO.class)
+                .with(schema)
+                .readValues(new String(file.getBytes(), StandardCharsets.UTF_8))) {
+
+            TaskDTO taskDTO;
+            taskDTOS = new ArrayList<>();
+            while (parsedData.hasNext()) {
+                taskDTO = parsedData.next();
+                taskDTOS.add(add(taskDTO));
+            }
+        }
+
+        return taskDTOS;
     }
 }

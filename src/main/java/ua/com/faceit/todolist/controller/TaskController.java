@@ -2,16 +2,19 @@ package ua.com.faceit.todolist.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ua.com.faceit.todolist.dto.TaskDTO;
 import ua.com.faceit.todolist.exception.BadRequestException;
 import ua.com.faceit.todolist.service.TaskService;
 import ua.com.faceit.todolist.validation.group.CreateTaskInfo;
 import ua.com.faceit.todolist.validation.group.UpdateTaskInfo;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -62,9 +65,18 @@ public class TaskController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateTask(@Validated(UpdateTaskInfo.class) @RequestBody TaskDTO task) {
         TaskDTO taskDTO = taskService.update(task);
 
         return ResponseEntity.ok(taskDTO);
+    }
+
+    @PostMapping(value = "/upload")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> uploadTask(@RequestParam("file") MultipartFile file) throws IOException {
+        List<TaskDTO> tasks = taskService.upload(file);
+
+        return ResponseEntity.ok(tasks);
     }
 }
