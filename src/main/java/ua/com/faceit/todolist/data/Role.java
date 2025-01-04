@@ -2,12 +2,17 @@ package ua.com.faceit.todolist.data;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "roles",
+uniqueConstraints = {
+        @UniqueConstraint(columnNames = "name")
+})
 @Getter
 @Setter
+@NoArgsConstructor
 public class Role {
 
     @Id
@@ -17,9 +22,6 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private ERole name;
-
-    public Role() {
-    }
 
     public Role(ERole name) {
         this.name = name;

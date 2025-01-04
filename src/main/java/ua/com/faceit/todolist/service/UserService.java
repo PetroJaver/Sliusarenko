@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.stereotype.Service;
 import ua.com.faceit.todolist.data.User;
+import ua.com.faceit.todolist.dto.UserDTO;
+import ua.com.faceit.todolist.mapper.UserMapper;
 import ua.com.faceit.todolist.repository.UserRepository;
 
 import java.util.List;
@@ -14,13 +16,12 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private UserMapper userMapper;
 
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        for (User user : users) {
-            user.setPassword("");
-        }
 
-        return users;
+        return userMapper.toUserDTOs(users);
     }
 }
